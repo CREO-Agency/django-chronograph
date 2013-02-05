@@ -345,7 +345,12 @@ class Job(models.Model):
         heartbeat.stop()
         heartbeat.join()
         
-        duration = (dates.now()-run_date).total_seconds()
+        try:
+            duration = (dates.now()-run_date).total_seconds()
+        except AttributeError:
+            # 2.6 compatibility
+            td = dates.now() - run_date
+            duration = td.seconds + (td.days * 24 * 60 * 60)
         
         self.is_running = False
         self.lock_file = ""
